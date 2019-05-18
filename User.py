@@ -1,4 +1,6 @@
 def ArriveUser(User,date):
+    if '#' in User:
+        User.replace('#','*')
     a=open('Users.txt','a')
     a.write(User+'#True[('+date.split('T')[0]+')('+date.split('T')[1]+')]\n')
     a.close()
