@@ -3,6 +3,7 @@ from selenium import webdriver
 import time as t
 import User as u
 driver = webdriver.Chrome()#Calls Firefox(I believe there is a way to call chrome, but i am lazy)
+driver.maximize_window()
 driver.get('http://web.whatsapp.com')#Call WebWhatsapp
 print('Please Scan the QR Code and press enter')
 input()#Pause To scan QR Code
