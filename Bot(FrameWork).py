@@ -2,13 +2,13 @@ import datetime as d
 from selenium import webdriver
 import time as t
 import User as u
-driver = webdriver.Firefox()#Calls Firefox(Use webdriver.Chrome() for Chrome if you like that)
+driver = webdriver.Firefox()#Calls Firefox(I believe there is a way to call chrome, but i am lazy)
 driver.get('http://web.whatsapp.com')#Call WebWhatsapp
 print('Please Scan the QR Code and press enter')
 input()#Pause To scan QR Code
 while True:
     user=u.Users()
-    register=driver.find_elements_by_class_name("OUeyt")# The green dot tells us that the message is new
+    register=driver.find_elements_by_class_name("P6z4j")# The green dot tells us that the message is new
     date=d.date.today().isoformat()#Register Date and Time Of Entering And Leaving Bot
     if len(register) > 0:
         ele = register[-1]
@@ -23,18 +23,17 @@ while True:
         except Exception as e:
             pass
         try:
-            name = driver.find_element_by_class_name("_16vzP").text #Name Of Contact/Group
-            message = driver.find_elements_by_class_name("vW7d1")[-1].text.lower()# Last Message Recieved
+            name = driver.find_element_by_xpath("/html/body/div[1]/div/div/div[4]/div/header/div[2]/div[1]/div/span").text #Name Of Contact/Group
+            message = driver.find_elements_by_class_name("-N6Gq")[-1].text.lower()# Last Message Recieved
+            textbox = driver.find_element_by_xpath("/html/body/div/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]")#Textbox
             if 'garbage.exe' in message.lower():#To Summon Bot To A Chat
                 if name not in user:#New User
                     u.ArriveUser(name,date)
-                    textbox = driver.find_element_by_class_name("_2S1VP")
                     response='Hello, This Is Garbage, Thank You For Calling Me, '+name+'. If you need help, Say "!help", If you want me to leave say "bye garb" and please no enter keys(\\n)\n'
                     textbox.send_keys(response)
                     pass
                 elif name in user and 'false' in user[name].lower():#Old User
                     u.ArriveUser(name,date)
-                    textbox = driver.find_element_by_class_name("_2S1VP")
                     response='Hello, This Is Garbage, Thank You For Calling Me Again, '+name+'. If you need help, Say "!help", If you want me to leave say "bye garb" and please no enter keys(\\n)\n'
                     textbox.send_keys(response)
                     pass
@@ -45,7 +44,6 @@ while True:
                     pass
             if name in user:#Commands
                 assert '\n' in message, 'Please No \\n(Enter Key)'#Sometimes, The Bot Errors Out With '\n' keys
-                textbox = driver.find_element_by_class_name("_2S1VP")
                 #Here you add an if Condition and then code the basic code for the system
                 #Conside Importing Them As Libraries
                 #and putting the if condition and call the function
@@ -62,7 +60,7 @@ while True:
                     break
         except Exception as e:#Sends Error To Both IDLE and Users
             print (e)
-            textbox = driver.find_element_by_class_name("_2S1VP")
+            textbox = driver.find_element_by_xpath("/html/body/div/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]")
             response=str(e)[0].upper()+str(e)[1:]+'\n'
             textbox.send_keys(response)
         t.sleep(1)
