@@ -1,67 +1,94 @@
 import datetime as d
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
 import time as t
 import User as u
-driver = webdriver.Chrome()#Calls Firefox(I believe there is a way to call chrome, but i am lazy)
+import Modules.Constant as c
+import Commands as cmd
+import os
+import md5
+md5.Setup()
+hlp=open('Help.txt','r').read()
+driver = webdriver.Firefox()
 driver.maximize_window()
-driver.get('http://web.whatsapp.com')#Call WebWhatsapp
-print('Please Scan the QR Code and press enter')
-input()#Pause To scan QR Code
+driver.get('http://web.whatsapp.com')
+print('Please Scan the QR Code')
 while True:
-    user=u.Users()
-    register=driver.find_elements_by_class_name("P6z4j")# The green dot tells us that the message is new
-    date=d.date.today().isoformat()#Register Date and Time Of Entering And Leaving Bot
-    if len(register) > 0:
-        ele = register[-1]
-        action = webdriver.common.action_chains.ActionChains(driver)
-        action.move_to_element_with_offset(ele, 0, -20)# move a bit to the left from the green dot
-        # Clicking couple of times because sometimes whatsapp web responds after two clicks
+    try:
+        md5.Update()
+    except:
+        os.system('python3 Bot.py')
+        break
+    try:
+        user=u.Users()
+        register=driver.find_elements_by_class_name(c.Greendot)
+        date=d.datetime.now().isoformat()
         try:
-            action.click()
-            action.perform()
-            action.click()
-            action.perform()
-        except Exception as e:
+            driver.find_element_by_xpath(c.Down).click()
+        except:
             pass
-        try:
-            name = driver.find_element_by_xpath("/html/body/div[1]/div/div/div[4]/div/header/div[2]/div[1]/div/span").text #Name Of Contact/Group
-            message = driver.find_elements_by_class_name("-N6Gq")[-1].text.lower()# Last Message Recieved
-            textbox = driver.find_element_by_xpath("/html/body/div/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]")#Textbox
-            if 'garbage.exe' in message.lower():#To Summon Bot To A Chat
-                if name not in user:#New User
-                    u.ArriveUser(name,date)
-                    response='Hello, This Is Garbage, Thank You For Calling Me, '+name+'. If you need help, Say "!help", If you want me to leave say "bye garb" and please no enter keys(\\n)\n'
-                    textbox.send_keys(response)
+        if len(register) > 0:
+            ele = register[-1]
+            action = webdriver.common.action_chains.ActionChains(driver)
+            action.move_to_element_with_offset(ele, 0, -20)
+            try:
+                action.click()
+                action.perform()
+                action.click()
+                action.perform()
+            except Exception as e:
+                pass
+            try:
+                name = driver.find_element_by_xpath(c.Nme).text
+                message = driver.find_elements_by_class_name(c.Msg)[-1].text.lower()
+                UserName=driver.find_element_by_xpath(c.Info).get_attribute('data-pre-plain-text').split("]")[1]
+                a=open('MessageHistory.txt','a')
+                a.write(name+'\n'+UserName+':'+message+'\n')
+                a.close()
+                textbox = driver.find_element_by_xpath(c.Tbx)
+                if 'garbage.exe' in message.lower():
+                    if name not in user:
+                        u.ArriveUser(name,date)
+                        response='Hello, This Is Garbage, Thank You For Calling Me, '+name+'. If you need help, Say !help, If you want me to leave say bye garb and please no enter keys(\\n)\n'
+                        textbox.send_keys(response)
+                        pass
+                    elif name in user and 'false' in user[name].lower():
+                        u.ArriveUser(name,date)
+                        response='Hello, This Is Garbage, Thank You For Calling Me Again, '+name+'. If you need help, Say !help, If you want me to leave say bye garb and please no enter keys(\\n)\n'
+                        textbox.send_keys(response)
+                        pass
+                    else:
+                        response='I am already here\n'
+                        textbox.send_keys(response)
+                        pass
+                if (name in user) and ('true' in user[name].lower()):
+                    assert '\n' in message, 'Please No \\n(Enter Key)'
+                    if '!help' in message:
+                        res=hlp
+                        for x in res.split('\n'):
+                            textbox.send_keys(x)
+                            textbox.send_keys(Keys.SHIFT+Keys.ENTER)
+                        textbox.send_keys('\n')
+                    cmd.Commands(driver,textbox,date,message,name,UserName)
+                    if 'bye garb' in message.lower():
+                        response='Goodbye\n'
+                        textbox.send_keys(response)
+                        u.LeaveUser(name,date)
+                        pass
+                    if 'killswitch' in message.lower():
+                        break
+            except Exception as e:
+                print (e)
+                try:
+                    driver.find_element_by_class_name(c.Qt).click()
+                except:
                     pass
-                elif name in user and 'false' in user[name].lower():#Old User
-                    u.ArriveUser(name,date)
-                    response='Hello, This Is Garbage, Thank You For Calling Me Again, '+name+'. If you need help, Say "!help", If you want me to leave say "bye garb" and please no enter keys(\\n)\n'
-                    textbox.send_keys(response)
-                    pass
-                else:#Already In Chat
-                    textbox = driver.find_element_by_class_name("_2S1VP")
-                    response='I am already here\n'
-                    textbox.send_keys(response)
-                    pass
-            if name in user:#Commands
-                assert '\n' in message, 'Please No \\n(Enter Key)'#Sometimes, The Bot Errors Out With '\n' keys
-                #Here you add an if Condition and then code the basic code for the system
-                #Conside Importing Them As Libraries
-                #and putting the if condition and call the function
-                #My Thoughts Anyway
-                if '!help' in message.lower():#For Interface Help
-                    response='Commands:\n'
-                    textbox.send_keys(response)
-                    pass
-                if 'bye garb' in message.lower():#For Bot To Leave
-                    response='Goodbye\n'
-                    textbox.send_keys(response)
-                    u.LeaveUser(name,date)
-                if 'killswitch' in message.lower():#Developer Emergency Kill(Not Offical Command In Help[I don't advice putting there])
-                    break
-        except Exception as e:#Sends Error To Both IDLE and Users
-            print (e)
-            textbox = driver.find_element_by_xpath("/html/body/div/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]")
-            response=str(e)[0].upper()+str(e)[1:]+'\n'
-            textbox.send_keys(response)
-        t.sleep(1)
+                if 'Message' not in str(e):
+                    if (name in user) and ('true' in user[name].lower()):
+                        textbox = driver.find_element_by_xpath(c.Tbx)
+                        response=str(e)[0].upper()+str(e)[1:]+'\n'
+                        textbox.send_keys(response)
+            t.sleep(1)
+    except Exception as e:
+        print(e)
