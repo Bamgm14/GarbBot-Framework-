@@ -91,7 +91,6 @@ while True:
                         response=str(e)[0].upper()+str(e)[1:]+'\n'
                         textbox.send_keys(response)
                         print (e)
-                driver.get('http://web.whatsapp.com')
             t.sleep(1)
     except Exception as e:
         driver.get('http://web.whatsapp.com')
