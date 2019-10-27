@@ -7,19 +7,15 @@ import User as u
 import Modules.Constant as c
 import Commands as cmd
 import os
-import md5
-md5.Setup()
 hlp=open('Help.txt','r').read()
 driver = webdriver.Firefox()
 driver.maximize_window()
 driver.get('http://web.whatsapp.com')
+page=driver.page_source
 print('Please Scan the QR Code')
+while page==driver.page_source:
+    pass
 while True:
-    try:
-        md5.Update()
-    except:
-        os.system('python3 Bot.py')
-        break
     try:
         user=u.Users()
         register=driver.find_elements_by_class_name(c.Greendot)
@@ -42,9 +38,15 @@ while True:
             try:
                 name = driver.find_element_by_xpath(c.Nme).text
                 message = driver.find_elements_by_class_name(c.Msg)[-1].text.lower()
-                UserName=driver.find_element_by_xpath(c.Info).get_attribute('data-pre-plain-text').split("]")[1]
+                time = message.split('\n')[len(message.split('\n'))-1]
+                if len(message.split('\n'))>=3:
+                    UserName=message.split('\n')[len(message.split('\n'))-3]
+                else:
+                    UserName=name
+                #UserName=driver.find_elements_by_class_name(c.Info)[-1].get_attribute('data-pre-plain-text').split("]")[1].replace(':','').replace(' ','')
+                message=message.split('\n')[len(message.split('\n'))-2]
                 a=open('MessageHistory.txt','a')
-                a.write(name+'\n'+UserName+':'+message+'\n')
+                a.write('{"'+name+'":("'+UserName+'","'+message+'","'+time+'")}\n====\n')
                 a.close()
                 textbox = driver.find_element_by_xpath(c.Tbx)
                 if 'garbage.exe' in message.lower():
@@ -63,32 +65,34 @@ while True:
                         textbox.send_keys(response)
                         pass
                 if (name in user) and ('true' in user[name].lower()):
-                    assert '\n' in message, 'Please No \\n(Enter Key)'
                     if '!help' in message:
                         res=hlp
                         for x in res.split('\n'):
                             textbox.send_keys(x)
                             textbox.send_keys(Keys.SHIFT+Keys.ENTER)
                         textbox.send_keys('\n')
-                    cmd.Commands(driver,textbox,date,message,name,UserName)
                     if 'bye garb' in message.lower():
                         response='Goodbye\n'
                         textbox.send_keys(response)
                         u.LeaveUser(name,date)
-                        pass
-                    if 'killswitch' in message.lower():
+                        continue
+                    if '!killswitch' in message.lower():
                         break
+                    cmd.Commands(driver,textbox,date,message,name,UserName)
             except Exception as e:
-                print (e)
                 try:
                     driver.find_element_by_class_name(c.Qt).click()
                 except:
                     pass
+                print(e)
                 if 'Message' not in str(e):
                     if (name in user) and ('true' in user[name].lower()):
                         textbox = driver.find_element_by_xpath(c.Tbx)
                         response=str(e)[0].upper()+str(e)[1:]+'\n'
                         textbox.send_keys(response)
+                        print (e)
+                driver.get('http://web.whatsapp.com')
             t.sleep(1)
     except Exception as e:
+        driver.get('http://web.whatsapp.com')
         print(e)
