@@ -11,10 +11,7 @@ hlp=open('Help.txt','r').read()
 driver = webdriver.Firefox()
 driver.maximize_window()
 driver.get('http://web.whatsapp.com')
-page=driver.page_source
 print('Please Scan the QR Code')
-while page==driver.page_source:
-    pass
 while True:
     try:
         user=u.Users()
