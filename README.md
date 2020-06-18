@@ -10,3 +10,5 @@ For Firefox:
 3)geckodrive
 For Chrome:
 3)chromedriver
+<b>
+[Deprecated]
