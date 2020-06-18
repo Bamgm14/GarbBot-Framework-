@@ -10,5 +10,5 @@ For Firefox:
 3)geckodrive
 For Chrome:
 3)chromedriver
-<b>
-[Deprecated]
+<br>
+<h1><b>[Deprecated]</b></h1>
