@@ -11,4 +11,4 @@ For Firefox:
 For Chrome:
 3)chromedriver
 <br>
-<h1><b>[Deprecated]</b></h1>
+<h1><b>[Being Rebuilt]</b></h1>
