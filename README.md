@@ -1,5 +1,5 @@
 # GarbageBot-Framework-
-<<<<<<< HEAD
+
 
 ## Introduction
 I built this project out of boredom. This project is an unofficial Web WhatsApp API and will be supported as of when I am or accept pulls. The older version is broken due to WhatsApp Web so this has been reconstructed to make it easier to use. My old project was during my 11th and 12th grade and as such shows my inexperience as a programmer. I believe this code is a better design, though the commenting is bad. The project builds on 3 WhatsApp projects. Though one of them seems to have been removed from Github. The other 2 are:
