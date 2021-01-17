@@ -3,6 +3,7 @@ from selenium import webdriver
 import time as t
 import os,json,asyncio,logging
 import Core as c
+from Modules import *
 import sqlite3 as sql
 
 class Bot(c.API):
@@ -120,4 +121,5 @@ if __name__ == '__main__':
     profile_file = input("File name for WhatsApp Profile:")
     log_level = input("Enter log level:")
     garb = Bot(bot_name,command_prefix,browser,profile_file,log_level)
+    garb.add_commands({"test_image": ["Image Test Run",Test.test_picture],"test_text":["Text Test Run",Test.test_text]})
     garb.start()
