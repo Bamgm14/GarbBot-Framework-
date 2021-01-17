@@ -32,7 +32,7 @@ from Bot import Bot
 #command_prefix is the symbol before the command
 #db is database for users storage.
 def foo(bot):
-    return "foo"
+    return bot.typer("foo",bot.textbox)
 bot = Bot(bot_name,command_prefix,browser,profile_file,log_level,db)
 bot.add_command("<Name of Function>","Description of Function",foo)
 bot.add_commands({"<Name of Function>":["<Description>",foo]})
