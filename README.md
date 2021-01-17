@@ -48,6 +48,13 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+## Notes
+
+1) Not sure why Chrome headless mode doesn't work... I am as curious as everyone else.
+2) Not sure how to impliment Edge when Edge is weird in selenium
+3) Not Supported PhatomJS and Internet Explorer (Who are you who uses IE?)
+4) Please tell me if how to improve if you find something to improve on.
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
