@@ -1,20 +1,20 @@
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium import webdriver
+from selenium.webdriver import *
+from msedge.selenium_tools import *
 import time as t
 import os,json,asyncio,logging
 
 class BotException(Exception):
     pass
 class API:
-    def __init__(self,browser,filename,log):
+    def __init__(self,browser,filename,log,headless=False):
         self._loglevel_ = {"info": 20,"debug": 10,
                            "warning": 30,"error": 40,
                            "critical": 50,"null": 0}
                            
-        self._browsers_ = {"chrome": webdriver.Chrome,"firefox": webdriver.Firefox,
-                           "edge": webdriver.Edge,"opera": webdriver.Opera,
-                           "safari": webdriver.Safari}
+        self._browsers_ = {"chrome": [Chrome, ChromeOptions],"firefox": [Firefox, FirefoxOptions], #Chrome is weird and doesn't work for some reason
+                           "edge": [Edge, EdgeOptions],"opera": [Opera, lambda : self.__execute_error__(f"No Headless for {browser}")],
+                           "safari": [Safari, lambda : self.__execute_error__(f"No Headless for {browser}")]}
                            
         self._xpaths_ = {"attachment": '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[1]/div[2]/div/div/span',
                          "send_file": '/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div/span',
@@ -28,6 +28,7 @@ class API:
                          "search_group": '/html/body/div[1]/div/div/div[3]/div/div[1]/div/label/div/div[2]',
                          "searched_chat": '/html/body/div[1]/div/div/div[3]/div/div[2]/div[1]/div/div/div[12]/div/div/div[2]/div[1]/div[1]/span/span',
                          "close": '/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/header/div/div[1]/button'}
+        
         self._classes_ = {"greendot": 'VOr2j',
                           "message": '_1wlJG',
                           "close": 'hYtwT'}
@@ -43,18 +44,28 @@ class API:
         self.change_log_level(log)
         
         if browser.lower() in self._browsers_.keys():
-            self.driver = self._browsers_[browser.lower()]()
+            if headless:
+                options = self._browsers_[browser.lower()][1]()
+                options.headless = headless
+                self.driver = self._browsers_[browser.lower()][0](options = options)
+            else:
+                self.driver = self._browsers_[browser.lower()][0]()
         else:
             raise BotException("Browser Type Not Found.")
-            
         self.driver.maximize_window()
         self.driver.get('http://web.whatsapp.com')
         if not os.path.isfile(filename):
+            if headless:
+                self.close()
+                raise BotException("Cannot Run QR Scan which requires GUI.")
             print('Please Scan the QR Code')
             if 'y' == input("Do you want to save session for future loads?[Y/N]:")[0].lower():
                 self.__save_profile__(self.__get_indexed_db__(),filename)
         else:
             self.__access_by_file__(filename)
+    def __execute_error__(self,message):
+        raise BotException(message)
+        
     def __get_indexed_db__(self):
         #Code taken from WaWebSessionHandler-master by jeliebig
         self.log.debug('Executing getIDBObjects function...')
@@ -89,6 +100,7 @@ class API:
         wa_session_list = self.driver.execute_script('return window.waScript.waSession;')
         self.log.debug('Got IDB data...')
         return wa_session_list
+        
     def __save_profile__(self, wa_profile_list, filename):
         #Code taken from WaWebSessionHandler-master by jeliebig
         verified_wa_profile_list = False
@@ -101,6 +113,7 @@ class API:
             self.log.debug('Saving WaSession object to file...')
             with open(filename, 'w') as file:
                 json.dump(wa_profile_list, file, indent=4)
+                
     def __access_by_obj__(self, wa_profile_list):
         #Code taken from WaWebSessionHandler-master by jeliebig
         verified_wa_profile_list = False
@@ -161,6 +174,7 @@ class API:
             return self.__access_by_obj__(wa_profile_list)
         except Exception as e:
             pass
+            
     def __access_by_file__(self, profile_file):
         #Code taken from WaWebSessionHandler-master by jeliebig
         self.log.debug('Reading WaSession from file...')
@@ -185,6 +199,7 @@ class API:
             textbox.send_keys(x)
             textbox.send_keys(Keys.SHIFT+Keys.ENTER)
         textbox.send_keys('\n')
+        
     def send(self,direct,caption=None):
         self.log.debug(f'Sending file,"{direct}"')
         attach_btn = self.driver.find_element_by_xpath(self._xpaths_["attachment"])
@@ -200,18 +215,26 @@ class API:
             send_btn.click()
         except:
             self.driver.find_element_by_class_name(self._classes_["close"]).click()
+            
     def change_log_level(self,log_level):
         if log_level.lower() in self._loglevel_.keys():
             self.log.setLevel(self._loglevel_[log_level.lower()])
         else:
             print("[!]No log level given, fault to warning")
             self.log.setLevel(logging.WARNING)
+            
     def search(self,name):
         search = self.driver.find_element_by_xpath(self._xpaths_["search_group"])
         search.send_keys(name)
         chat = self.driver.find_element_by_xpath(self._xpaths_["searched_chat"])
         chat.click()
+        
     def chat_textbox(self):
         return self.driver.find_element_by_xpath(self._xpaths_['textbox'])
+        
     def admin(self):
         pass
+        
+    def close(self):
+        self.driver.quit()
+        

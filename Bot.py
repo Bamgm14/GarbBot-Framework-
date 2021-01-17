@@ -1,6 +1,5 @@
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium import webdriver
-from selenium.common.exceptions import InvalidSessionIdException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import *
 import time as t
 import os,json,asyncio,logging
 import Core as c
@@ -8,7 +7,8 @@ from Modules import Test
 import sqlite3 as sql
 
 class Bot(c.API):
-    def __init__(self,bot_name,command_prefix,browser,profile_file,log,db="Users.sql"):
+    def __init__(self,bot_name,command_prefix,browser,profile_file,log,headless=False,db="Users.sql"):
+        super().__init__(browser,profile_file,log,headless)
         self.message = None
         self.bot_name = bot_name.lower()
         self.command_prefix = command_prefix.lower()
@@ -21,12 +21,13 @@ class Bot(c.API):
         con.execute("create table if not exists users (id INTEGER PRIMARY KEY AUTOINCREMENT, name char(128),login int,last_login int, last_logout int)")
         self.con.commit()
         self.__get_user__()
-        super().__init__(browser,profile_file,log)
+
     def __get_user__(self):
         con = self.con.cursor()
         con.execute('select name,login from users')
         for x in con.fetchall():
             self.users[x[0]] = x[1]
+            
     def __add_user__(self):
         con = self.con.cursor()
         if self.username not in self.users.keys():
@@ -41,6 +42,7 @@ class Bot(c.API):
         self.con.commit()
         self.__get_user__()
         return ret
+        
     def __remove_user__(self):
         con = self.con.cursor()
         con.execute("update users set login = ?,last_logout = ? where name = ?",(0,int(t.time()),self.username))
@@ -53,13 +55,14 @@ class Bot(c.API):
             self.register = self.driver.find_elements_by_class_name(self._classes_["greendot"])
             if len(self.register) > 0:
                 ele = self.register[-1]
-                action = webdriver.common.action_chains.ActionChains(self.driver)
+                action = ActionChains(self.driver)
                 action.move_to_element_with_offset(ele, 0, -30)
                 try:
-                    action.click()
                     action.perform()
                     action.click()
                     action.perform()
+                    action.click()
+                    
                 except Exception as e:
                     pass
         except InvalidSessionIdException as e:
@@ -67,24 +70,30 @@ class Bot(c.API):
             raise c.BotException(f"The Browser has an error.\n{str(e)}")
         except Exception as e:
             self.log.warning(e)
+            
     def add_command(self,command_name,desc,function):
         self.commands[command_name.lower()] = {"desc": desc,"func": function}
+        
     def remove_command(self,command_name):
         del self.commands[command_name.lower()]
+        
     def add_commands(self,dct):
         for x in dct.keys():
             try:
                 self.add_command(x,*dct[x].values())
             except:
                 self.add_command(x,*dct[x])
+                
     def remove_commands(self,lst):
         for x in lst:
             self.remove_command(x)
+            
     def __help_command__(self):
         hlp = '*[Help]*\n'
         for x in self.commands.keys():
             hlp += self.command_prefix + x + ":" + self.commands[x]["desc"] + "\n"
         return hlp[:-1]
+        
     def start(self):
         while self.message != self.command_prefix + "killswitch":
             try:
@@ -120,13 +129,14 @@ class Bot(c.API):
             except Exception as e:
                 self.log.error(e)
                 self.driver.refresh()
-        self.driver.quit()
+        self.close()
+        
 if __name__ == '__main__':
     bot_name = input("Bot Name:")
     command_prefix = input("Command Prefix:")
     browser = input("Browser Name:")
     profile_file = input("File name for WhatsApp Profile:")
     log_level = input("Enter log level:")
-    garb = Bot(bot_name,command_prefix,browser,profile_file,log_level)
+    garb = Bot(bot_name,command_prefix,browser,profile_file,log_level,)
     garb.add_commands({"test_image": ["Image Test Run",Test.test_picture],"test_text":["Text Test Run",Test.test_text]})
     garb.start()
