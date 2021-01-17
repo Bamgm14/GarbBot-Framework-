@@ -1,14 +1,57 @@
 # GarbageBot-Framework-
-This Is A Whatsapp Bot... Its based on an incomplete code, I cannot find again... If someone does please mention to give proper credit. Anyway this bot is for my school. Hope everyone will enjoy it.
-If Any Question, Please Do Ask...
-Might Update To Make It Chrome compatiable(Finished)
-Just To Say This Bot Also Logs Anyone That Adds The Bot and when he disconnects
-Requirements:
-1)Selenium
-2)Python 3.7.2(I only tested it on that)
-For Firefox:
-3)geckodrive
-For Chrome:
-3)chromedriver
-<br>
-<h1><b>[Being Rebuilt]</b></h1>
+<<<<<<< HEAD
+
+## Introduction
+I built this project out of boredom. This project is an unofficial Web WhatsApp API and will be supported as of when I am or accept pulls. The older version is broken due to WhatsApp Web so this has been reconstructed to make it easier to use. My old project was during my 11th and 12th grade and as such shows my inexperience as a programmer. I believe this code is a better design, though the commenting is bad. The project builds on 3 WhatsApp projects. Though one of them seems to have been removed from Github. The other 2 are:
+
+1) [Simple-Yet-Hackable-WhatsApp-api by VISWESWARAN1998](https://github.com/VISWESWARAN1998/Simple-Yet-Hackable-WhatsApp-api)
+2) [WaWebSessionHandler by jeliebig](https://github.com/jeliebig/WaWebSessionHandler)
+
+
+[comment]: <> (This is a comment, it will not be included)
+[comment]: <> (in  the output file unless you use it in)
+[comment]: <> (a reference style link.)
+## Usage
+### API
+
+```python
+from Core import API
+
+#log_levels = {"info": 20,"debug": 10,"warning": 30,"error": 40,"critical": 50,"null": 0}
+#browsers = {"chrome": webdriver.Chrome,"firefox": webdriver.Firefox,"edge": webdriver.Edge,"opera": webdriver.Opera,safari": webdriver.Safari}
+#profile_filename is the cofiguration of web whatsapp. Based on https://github.com/jeliebig/WaWebSessionHandler
+api = API(browser,profile_filenmae,log_level)
+api.typer("<Message to be set>",api.chat_textbox())
+api.send("<Path Of File>","<Caption>")
+```
+
+### Bot
+```python
+from Bot import Bot
+
+#log_levels = {"info": 20,"debug": 10,"warning": 30,"error": 40,"critical": 50,"null": 0}
+#browsers = {"chrome": webdriver.Chrome,"firefox": webdriver.Firefox,"edge": webdriver.Edge,"opera": webdriver.Opera,safari": webdriver.Safari}
+#profile_filename is the cofiguration of web whatsapp. Based on https://github.com/jeliebig/WaWebSessionHandler
+#bot_name is the name you want to give it
+#command_prefix is the symbol before the command
+#db is database for users storage.
+def foo(bot):
+    return "foo"
+bot = Bot(bot_name,command_prefix,browser,profile_file,log_level,db)
+bot.add_command("<Name of Function>","Description of Function",foo)
+bot.add_commands({"<Name of Function>":["<Description>",foo]})
+#OR bot.add_commands({"<Name of Function>":{"desc": "<Description>","func": foo]})
+bot.remove_command("<Name of Function>")
+bot.remove_commands(["<Name of Function>"])
+
+
+```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
