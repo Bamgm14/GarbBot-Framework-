@@ -1,9 +1,10 @@
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium import webdriver
+from selenium.common.exceptions import InvalidSessionIdException
 import time as t
 import os,json,asyncio,logging
 import Core as c
-from Modules import *
+from Modules import Test
 import sqlite3 as sql
 
 class Bot(c.API):
@@ -30,11 +31,11 @@ class Bot(c.API):
         con = self.con.cursor()
         if self.username not in self.users.keys():
             con.execute("insert into users(name,login,last_login) values(?,?,?)",(self.username,1,int(t.time())))
-            ret = f"Hello, This Is Garbage, Thank You For Calling Me, {self.username}. If you need help, Say {self.command_prefix}help\nIf you want me to leave say {self.command_prefix}bye.\n"
+            ret = f"Hello, This is {self.bot_name}, Thank You For Calling Me, {self.username}. If you need help, Say {self.command_prefix}help\nIf you want me to leave say {self.command_prefix}bye.\n"
         else:
             if not self.users[self.username]:
                 con.execute("update users set login = ?,last_login = ? where name = ?",(1,int(t.time()),self.username))
-                ret = f"Hello, This Is Garbage, Thank You For Calling Me Again, {self.username}. If you need help, Say {self.command_prefix}help\nIf you want me to leave say {self.command_prefix}bye.\n"
+                ret = f"Hello, This is {self.bot_name}, Thank You For Calling Me Again, {self.username}. If you need help, Say {self.command_prefix}help\nIf you want me to leave say {self.command_prefix}bye.\n"
             else:
                 ret = 'I am already here\n'
         self.con.commit()
@@ -61,6 +62,9 @@ class Bot(c.API):
                     action.perform()
                 except Exception as e:
                     pass
+        except InvalidSessionIdException as e:
+            self.log.error(e)
+            raise c.BotException(f"The Browser has an error.\n{str(e)}")
         except Exception as e:
             self.log.warning(e)
     def add_command(self,command_name,desc,function):
@@ -110,10 +114,13 @@ class Bot(c.API):
                             continue
                 except Exception as e:
                     self.log.warning(e)
+            except c.BotException as e:
+                self.log.critical(e)
+                break
             except Exception as e:
                 self.log.error(e)
                 self.driver.refresh()
-
+        self.driver.quit()
 if __name__ == '__main__':
     bot_name = input("Bot Name:")
     command_prefix = input("Command Prefix:")
