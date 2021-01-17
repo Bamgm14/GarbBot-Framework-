@@ -39,7 +39,7 @@ bot.add_commands({"<Name of Function>":["<Description>",foo]})
 #OR bot.add_commands({"<Name of Function>":{"desc": "<Description>","func": foo]})
 bot.remove_command("<Name of Function>")
 bot.remove_commands(["<Name of Function>"])
-
+bot.start() # Starts loop for commands
 
 ```
 
