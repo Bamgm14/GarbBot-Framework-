@@ -7,13 +7,9 @@ I built this project out of boredom. This project is an unofficial Web WhatsApp 
 1) [Simple-Yet-Hackable-WhatsApp-api by VISWESWARAN1998](https://github.com/VISWESWARAN1998/Simple-Yet-Hackable-WhatsApp-api)
 2) [WaWebSessionHandler by jeliebig](https://github.com/jeliebig/WaWebSessionHandler)
 
-
-[comment]: <> (This is a comment, it will not be included)
-[comment]: <> (in  the output file unless you use it in)
-[comment]: <> (a reference style link.)
 ## Usage
-### API
 
+### API
 ```python
 from Core import API
 
