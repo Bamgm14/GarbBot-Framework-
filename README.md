@@ -16,7 +16,8 @@ from Core import API
 #log_levels = {"info": 20,"debug": 10,"warning": 30,"error": 40,"critical": 50,"null": 0}
 #browsers = {"chrome": webdriver.Chrome,"firefox": webdriver.Firefox,"edge": webdriver.Edge,"opera": webdriver.Opera,safari": webdriver.Safari}
 #profile_filename is the cofiguration of web whatsapp. Based on https://github.com/jeliebig/WaWebSessionHandler
-api = API(browser,profile_filenmae,log_level)
+#Headless Mode [True or False].
+api = API(browser,profile_filenmae,log_level,headless)
 api.typer("<Message to be set>",api.chat_textbox())
 api.send("<Path Of File>","<Caption>")
 ```
@@ -27,13 +28,14 @@ from Bot import Bot
 
 #log_levels = {"info": 20,"debug": 10,"warning": 30,"error": 40,"critical": 50,"null": 0}
 #browsers = {"chrome": webdriver.Chrome,"firefox": webdriver.Firefox,"edge": webdriver.Edge,"opera": webdriver.Opera,safari": webdriver.Safari}
-#profile_filename is the cofiguration of web whatsapp. Based on https://github.com/jeliebig/WaWebSessionHandler
-#bot_name is the name you want to give it
-#command_prefix is the symbol before the command
+#profile_filename is the cofiguration of web whatsapp. Based on https://github.com/jeliebig/WaWebSessionHandler.
+#bot_name is the name you want to give it.
+#command_prefix is the symbol before the command.
+#Headless Mode [True or False].
 #db is database for users storage.
 def foo(bot):
     return bot.typer("foo",bot.textbox)
-bot = Bot(bot_name,command_prefix,browser,profile_file,log_level,db)
+bot = Bot(bot_name,command_prefix,browser,profile_file,log_level,headless,db)
 bot.add_command("<Name of Function>","Description of Function",foo)
 bot.add_commands({"<Name of Function>":["<Description>",foo]})
 #OR bot.add_commands({"<Name of Function>":{"desc": "<Description>","func": foo]})
