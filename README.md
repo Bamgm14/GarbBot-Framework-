@@ -1,4 +1,4 @@
-# GarbageBot-Framework-
+# GarbBot-Framework-
 
 
 ## Introduction
