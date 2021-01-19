@@ -112,8 +112,8 @@ class Bot(c.API):
                     self.username = self.driver.find_element_by_xpath(self._xpaths_["name"]).text
                     self.message = self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text
                     self.textbox = self.chat_textbox()
-                    self.log.debug(f"Name:{self.username}")
-                    self.log.debug(f"Message:{self.message}")
+                    self.log.info(f"Name:{self.username}")
+                    self.log.info(f"Message:{self.message}")
                     if self.command_prefix == self.message.split(' ')[0].lower()[0]:
                         if self.message.split(' ')[0].lower()[1:] == self.bot_name:
                             self.typer(self.__add_user__(),self.textbox)
