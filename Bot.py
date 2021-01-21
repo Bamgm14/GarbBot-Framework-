@@ -72,9 +72,11 @@ class Bot(c.API):
             self.log.warning(e)
             
     def add_command(self,command_name,desc,function):
+        self.log.debug(f"Adding Command {name}")
         self.commands[command_name.lower()] = {"desc": desc,"func": function}
         
     def remove_command(self,command_name):
+        self.log.debug(f"Removing Command {name}")
         del self.commands[command_name.lower()]
         
     def add_commands(self,dct):
@@ -103,14 +105,10 @@ class Bot(c.API):
                 except:
                     pass
                 try:
-                    try:
-                        self.driver.find_elements_by_class_name(self._classes_["message"])[-1]
-                    except:
+                    if self.message == self.read_lastest_message():
                         continue
-                    if self.message == self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text:
-                        continue
-                    self.username = self.driver.find_element_by_xpath(self._xpaths_["name"]).text
-                    self.message = self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text
+                    self.username = self.name_of_chat()
+                    self.message = self.read_lastest_message()
                     self.textbox = self.chat_textbox()
                     self.log.info(f"Name:{self.username}")
                     self.log.info(f"Message:{self.message}")

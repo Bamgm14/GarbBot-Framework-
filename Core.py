@@ -13,8 +13,8 @@ class API:
                            "critical": 50,"null": 0}
                            
         self._browsers_ = {"chrome": [Chrome, ChromeOptions],"firefox": [Firefox, FirefoxOptions], #Chrome is weird and doesn't work for some reason
-                           "edge": [Edge, EdgeOptions],"opera": [Opera, lambda : self.__execute_error__(f"No Headless for {browser}")],
-                           "safari": [Safari, lambda : self.__execute_error__(f"No Headless for {browser}")]}
+                           "edge": [Edge, EdgeOptions],"opera": [Opera,lambda : self.__execute_error__(f"No Headless for {browser}")],
+                           "safari": [Safari,lambda : self.__execute_error__(f"No Headless for {browser}")]}
                            
         self._xpaths_ = {"attachment": '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[1]/div[2]/div/div/span',
                          "send_file": '/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div/span',
@@ -51,12 +51,12 @@ class API:
             else:
                 self.driver = self._browsers_[browser.lower()][0]()
         else:
+            self.close()
             raise BotException("Browser Type Not Found.")
         self.driver.maximize_window()
         self.driver.get('http://web.whatsapp.com')
         if not os.path.isfile(filename):
             if headless:
-                self.close()
                 raise BotException("Cannot Run QR Scan which requires GUI.")
             print('Please Scan the QR Code')
             if 'y' == input("Do you want to save session for future loads?[Y/N]:")[0].lower():
@@ -194,27 +194,34 @@ class API:
                                  ' Make sure you only pass one WaSession file to this method.')
                                  
     def typer(self,res,textbox):
-        self.log.debug(f'Sending,"{res}"')
-        for x in res.split('\n'):
-            textbox.send_keys(x)
-            textbox.send_keys(Keys.SHIFT+Keys.ENTER)
-        textbox.send_keys('\n')
+        try:
+            self.log.debug(f'Sending,"{res}"')
+            for x in res.split('\n'):
+                textbox.send_keys(x)
+                textbox.send_keys(Keys.SHIFT+Keys.ENTER)
+            textbox.send_keys('\n')
+        except Exception as e:
+            self.log.warning(e)
         
     def send(self,direct,caption=None):
-        self.log.debug(f'Sending file,"{direct}"')
-        attach_btn = self.driver.find_element_by_xpath(self._xpaths_["attachment"])
-        attach_btn.click()
-        t.sleep(1)
-        attach_img_btn = self.driver.find_element_by_xpath(self._xpaths_["attachment_type"])
-        attach_img_btn.send_keys(direct)
-        t.sleep(3)
         try:
+            self.log.debug(f'Sending file,"{direct}"')
+            attach_btn = self.driver.find_element_by_xpath(self._xpaths_["attachment"])
+            attach_btn.click()
+            t.sleep(1)
+            attach_img_btn = self.driver.find_element_by_xpath(self._xpaths_["attachment_type"])
+            attach_img_btn.send_keys(direct)
+            t.sleep(3)
             if caption:
                 self.typer(caption,self.driver.find_element_by_xpath(self._xpaths_["caption"]))
             send_btn = driver.find_element_by_xpath(self._xpaths_["send_file"])
             send_btn.click()
-        except:
-            self.driver.find_element_by_class_name(self._classes_["close"]).click()
+        except Exception as e:
+            self.log.warning(e)
+            try:
+                self.driver.find_element_by_class_name(self._classes_["close"]).click()
+            except:
+                pass
             
     def change_log_level(self,log_level):
         if log_level.lower() in self._loglevel_.keys():
@@ -222,19 +229,48 @@ class API:
         else:
             print("[!]No log level given, fault to warning")
             self.log.setLevel(logging.WARNING)
-            
     def search(self,name):
-        search = self.driver.find_element_by_xpath(self._xpaths_["search_group"])
-        search.send_keys(name)
-        chat = self.driver.find_element_by_xpath(self._xpaths_["searched_chat"])
-        chat.click()
-        
+        try:
+            self.log.debug(f"Searching for {name}")
+            search = self.driver.find_element_by_xpath(self._xpaths_["search_group"])
+            search.send_keys(name + '\n')
+            t.sleep(1)
+            try:
+                search.send_keys(len(name)*Keys.BACKSPACE)
+            except:
+                pass
+        except Exception as e:
+            self.log.warning(e)
+            try:
+                search.send_keys(len(name)*Keys.BACKSPACE)
+            except:
+                pass
     def chat_textbox(self):
-        return self.driver.find_element_by_xpath(self._xpaths_['textbox'])
+        try:
+            return self.driver.find_element_by_xpath(self._xpaths_['textbox'])
+        except Exception as e:
+            self.log.warning(e)
+            return None
         
+    def read_lastest_message(self):
+        try:
+            return self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text
+        except Exception as e:
+            self.log.warning(e)
+            return None
+            
+    def name_of_chat(self):
+        try:
+            return self.driver.find_element_by_xpath(self._xpaths_["name"]).text
+        except:
+            self.log.warning(e)
+            return None
+            
     def admin(self):
         pass
         
     def close(self):
+        self.log.warning("Closing...")
         self.driver.quit()
+        
         
