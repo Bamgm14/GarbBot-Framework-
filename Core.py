@@ -256,7 +256,6 @@ class API:
         try:
             return self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text
         except Exception as e:
-            self.log.warning(e)
             return None
             
     def name_of_chat(self):
