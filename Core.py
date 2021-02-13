@@ -254,8 +254,23 @@ class API:
         
     def read_lastest_message(self):
         try:
-            return self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text
+            messages = []
+            #print(messages)
+            soup = BeautifulSoup(self.driver.page_source, "html.parser")
+            #print(soup.prettify())
+            for i in soup.find_all("div", class_="message-in"):
+                message = i.find("span", class_="selectable-text")
+                if message:
+                    #print(message)
+                    message2 = message.find("span")
+                    if message2:
+                        messages.append(message2.text)
+            messages = list(filter(None, messages))
+            #print(messages[-1])
+            return messages[-1]
+            #return self.driver.find_elements_by_class_name(self._classes_["message"])[-1].text
         except Exception as e:
+            self.log.warning(e)
             return None
             
     def name_of_chat(self):
