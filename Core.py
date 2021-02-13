@@ -8,6 +8,10 @@ class BotException(Exception):
     pass
 class API:
     def __init__(self,browser,filename,log,headless=False):
+        with open('Stringify.json','rb') as f:
+            self.string = json.load(f)
+        with open('Emojify.json','rb') as f:
+            self.emoji = json.load(f)
         self._loglevel_ = {"info": 20,"debug": 10,
                            "warning": 30,"error": 40,
                            "critical": 50,"null": 0}
@@ -275,7 +279,7 @@ class API:
             
     def name_of_chat(self):
         try:
-            return self.driver.find_element_by_xpath(self._xpaths_["name"]).text
+            return self.driver.find_element_by_xpath(self._xpaths_["name"]).text.encode('utf-8').decode('ascii','ignore')
         except:
             self.log.warning(e)
             return None
