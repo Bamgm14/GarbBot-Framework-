@@ -73,11 +73,11 @@ class Bot(c.API):
             self.log.warning(e)
             
     def add_command(self,command_name,desc,function):
-        self.log.debug(f"Adding Command {name}")
+        self.log.debug(f"Adding Command {command_name}")
         self.commands[command_name.lower()] = {"desc": desc,"func": function}
         
     def remove_command(self,command_name):
-        self.log.debug(f"Removing Command {name}")
+        self.log.debug(f"Removing Command {command_name}")
         del self.commands[command_name.lower()]
         
     def add_commands(self,dct):
