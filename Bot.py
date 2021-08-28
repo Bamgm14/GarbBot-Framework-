@@ -54,6 +54,7 @@ class Bot(c.API):
     def __get_new_msg__(self):
         try:
             self.register = self.driver.find_elements_by_class_name(self._classes_["greendot"])
+            print(self.register)
             if len(self.register) > 0:
                 ele = self.register[-1]
                 action = ActionChains(self.driver)

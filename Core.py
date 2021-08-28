@@ -1,6 +1,7 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import *
 from msedge.selenium_tools import *
+from bs4 import BeautifulSoup
 import time as t
 import os,json,asyncio,logging
 
@@ -33,7 +34,7 @@ class API:
                          "searched_chat": '/html/body/div[1]/div/div/div[3]/div/div[2]/div[1]/div/div/div[12]/div/div/div[2]/div[1]/div[1]/span/span',
                          "close": '/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/header/div/div[1]/button'}
         
-        self._classes_ = {"greendot": 'VOr2j',
+        self._classes_ = {"greendot": '_1pJ9J',
                           "message": '_1wlJG',
                           "close": 'hYtwT'}
 
